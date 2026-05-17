@@ -5,13 +5,14 @@ div.id = "container";
 
 div.innerHTML = `
     <input id="input" type="text">
-    <button id="boton">Enviar</button>
+    <button id="boton">Buscar</button>
 `;
 
 contBtn.appendChild(div);
 
 const valueBtn = document.getElementById('boton');
 const input = document.getElementById('input');
+const ordenar = document.getElementById('miSelect');
 
 function generarLi(dato) {
 
@@ -41,23 +42,36 @@ fetch('https://restcountries.com/v3.1/all?fields=name,capital,population,region,
 
         generarLi(data);
 
-        valueBtn.addEventListener('click', () => {
+        function actualizarLista() {
 
             const texto = input.value.toLowerCase();
 
-            const filtrados = data.filter(i =>
+            let resultado = data.filter(i =>
                 i.name.common.toLowerCase().includes(texto)
             );
 
-            generarLi(filtrados);
+            if (ordenar.value === 'nombre') {
 
-        });
+                resultado.sort((a, b) =>
+                    a.name.common.localeCompare(b.name.common)
+                );
+
+            } else if (ordenar.value === 'poblacion') {
+
+                resultado.sort((a, b) =>
+                    b.population - a.population
+                );
+
+            }
+
+            generarLi(resultado);
+        }
+
+        valueBtn.addEventListener('click', actualizarLista);
+
+        ordenar.addEventListener('click', actualizarLista);
 
     })
     .catch(error =>
         console.error('Error en la petición', error)
     );
-
-
-
-
